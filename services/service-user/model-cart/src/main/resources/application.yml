@@ -1,0 +1,16 @@
+server:
+  port: 8002
+
+spring:
+  application:
+    name: springcloud-service-cart
+
+eureka:
+  instance:
+      #自定义服务名称类型
+      instance-id: springcloud-service-cart-8002
+      #访问路径可以显示IP地址
+      prefer-ip-address: true
+
+
+

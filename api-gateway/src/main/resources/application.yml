@@ -1,0 +1,31 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: springcloud-api-gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka
+      #,http://127.0.0.1:7002/eureka,http://127.0.0.1:7003/eureka
+  instance:
+    instance-id: springcloud-api-gateway-80
+    prefer-ip-address: true
+
+zuul:
+  prefix: /bearcat
+  #ignored-services: "*"
+  routes:
+    client.serviceId: springcloud-comsumer-client
+    client.path: /client/**
+
+#logging:
+#  config:
+#    classpath:log4j2.xml
+#logbook:
+#  write:
+#    level: TRACE
+#  format:
+#    style: http

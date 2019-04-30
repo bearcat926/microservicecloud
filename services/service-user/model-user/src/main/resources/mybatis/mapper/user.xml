@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.UserDao">
+
+    <select id="findUser" parameterType="User" resultType="edu.bearcat.microservice.entities.User">
+        select * from USER
+        <where>
+            <if test="userId!=null and userId!=''">
+                USER_ID = #{userId}
+            </if>
+            <if test="wxId!=null and wxId!=''">
+                and wx_id = #{wxId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addUser" parameterType="User">
+        INSERT INTO `user`(`user_id`, `wx_id`,  `wx_name`, `role`, `create_time`, `update_time`)
+        VALUES (#{userId},#{wxId},#{wxName},#{role},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="modifyUser" parameterType="User">
+        UPDATE USER
+        <set>
+            <if test="wxName!=null and wxName!=''">
+                wx_name = #{wxName}
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        <where>
+            <if test="userId!=null and userId!=''">
+                USER_ID = #{userId}
+            </if>
+            <if test="wxId!=null and wxId!=''">
+                and wx_id = #{wxId}
+            </if>
+        </where>
+    </update>
+</mapper>

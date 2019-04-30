@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.ProductDao">
+
+    <select id="selectById" resultType="edu.bearcat.microservice.entities.Product">
+        SELECT * FROM `product`
+        <where>
+            <if test="productId!=null and productId!=''">
+                product_id = #{productId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProductList" resultType="edu.bearcat.microservice.entities.Product">
+        SELECT * FROM `product`
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertProduct">
+        INSERT INTO `product`(`product_id`, `product_name`, `product_price`, `product_sold`, `product_description`, `product_icon`, `product_status`, `category_id`, `create_time`, `update_time`)
+        VALUES (#{productId}, #{productName}, #{productPrice}, #{productSold}, #{productDescription}, #{productIcon}, #{productStatus}, #{categoryId}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateProduct">
+        UPDATE product
+        <trim prefix="set" suffixOverrides=",">
+            <if test="productName!=null and productName!=''">
+                product_name = #{productName},
+            </if>
+            <if test="productPrice!=null and productPrice!=''">
+                product_price = #{productPrice},
+            </if>
+            <if test="productSold!=null and productSold!=''">
+                product_sold = #{productSold},
+            </if>
+            <if test="productDescription!=null and productDescription!=''">
+                product_description = #{productDescription},
+            </if>
+            <if test="productIcon!=null and productIcon!=''">
+                product_icon = #{productIcon},
+            </if>
+            <if test="productStatus!=null and productStatus!=''">
+                product_status = #{productStatus},
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        <where>
+            <if test="productId!=null and productId!=''">
+                product_id = #{productId}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteProduct">
+        DELETE FROM product
+        <where>
+            <if test="productId!=null and productId!=''">
+                product_id = #{productId}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+    </delete>
+</mapper>

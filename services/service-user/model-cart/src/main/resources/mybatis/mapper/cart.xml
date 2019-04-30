@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.CartDao">
+
+    <resultMap id="cartMap" type="edu.bearcat.microservice.entities.Cart">
+        <id column="cart_id" property="cartId" javaType="String"/>
+        <result column="user_id" property="userId" javaType="String"/>
+        <result column="restaurant_id" property="restaurantId" javaType="String"/>
+        <result column="cart_price" property="cartPrice" javaType="Double"/>
+        <result column="pocket_num" property="pocketNum" javaType="Integer"/>
+        <result column="create_time" property="createTime" javaType="String"/>
+        <result column="update_time" property="updateTime" javaType="String"/>
+        <collection property="products" javaType="list" ofType="edu.bearcat.microservice.entities.ProductVO">
+            <result column="cd_id" property="id" javaType="String"/>
+            <result column="product_id" property="productId" javaType="String"/>
+            <result column="product_name" property="productName" javaType="String"/>
+            <result column="product_price" property="productPrice" javaType="Double"/>
+            <result column="product_icon" property="productIcon" javaType="String"/>
+            <result column="product_num" property="productNum" javaType="Integer"/>
+            <result column="pocket_id" property="pocketId" javaType="Integer"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByIds" parameterType="Cart" resultMap="cartMap" >
+        SELECT c.cart_id,
+            c.user_id,
+            c.restaurant_id,
+            c.cart_price,
+            c.pocket_num,
+            c.create_time,
+            c.update_time,
+            cd.cart_id AS cd_id,
+            cd.product_id,
+            cd.product_name,
+            cd.product_price,
+            cd.product_icon,
+            cd.product_num,
+            cd.pocket_id
+        FROM cart c
+        LEFT JOIN cart_details cd ON c.cart_id = cd.cart_id
+        WHERE c.user_id = #{userId} AND c.restaurant_id = #{restaurantId}
+    </select>
+
+    <select id="selectByCartId" parameterType="Cart" resultMap="cartMap" >
+        SELECT c.cart_id,
+        c.user_id,
+        c.restaurant_id,
+        c.cart_price,
+        c.pocket_num,
+        c.create_time,
+        c.update_time,
+        cd.cart_id AS cd_id,
+        cd.product_id,
+        cd.product_name,
+        cd.product_price,
+        cd.product_icon,
+        cd.product_num,
+        cd.pocket_id
+        FROM cart c
+        LEFT JOIN cart_details cd ON c.cart_id = cd.cart_id
+        WHERE c.cart_id = #{cartId}
+    </select>
+
+    <insert id="insertCart" parameterType="Cart">
+        INSERT INTO `cart`(`cart_id`, `user_id`, `restaurant_id`, `cart_price`, `pocket_num`, `create_time`, `update_time`)
+        VALUES (#{cartId},#{userId},#{restaurantId},#{cartPrice},#{pocketNum},#{createTime},#{updateTime})
+    </insert>
+
+    <insert id="insertCartDetails" parameterType="ProductVO">
+        INSERT INTO `cart_details`(`cart_id`, `product_id`, `product_name`, `product_price`,`product_icon`, `product_num`, `pocket_id`)
+        VALUES (#{id},#{productId},#{productName},#{productPrice},#{productIcon},#{productNum},#{pocketId})
+    </insert>
+
+    <update id="updateCart" parameterType="Cart">
+        UPDATE cart
+        <trim prefix="set" suffixOverrides=",">
+            <if test="cartPrice!=null and cartPrice!=''">
+                cart_price = #{cartPrice},
+            </if>
+            <if test="pocketNum!=null and pocketNum!=''">
+                pocket_num = #{pocketNum},
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        <where>
+            <if test="cartId!=null and cartId!=''">
+                cart_id = #{cartId}
+            </if>
+            <if test="userId!=null and userId!=''">
+                and user_id = #{userId}
+            </if>
+            <if test="restaurantId!=null and restaurantId!=''">
+                and restaurant_id = #{restaurantId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateCartDetails" parameterType="ProductVO">
+        UPDATE cart_details
+        <set>
+            <if test="productNum!=null and productNum!=''">
+                product_num = #{productNum}
+            </if>
+        </set>
+        <where>
+            <if test="id!=null and id!=''">
+                cart_id = #{id}
+            </if>
+            <if test="productId!=null and productId!=''">
+                and product_id = #{productId}
+            </if>
+            <if test="pocketId!=null and pocketId!=''">
+                and pocket_id = #{pocketId}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteCart" parameterType="Cart">
+        DELETE FROM cart
+        <where>
+            <if test="cartId!=null and cartId!=''">
+                cart_id = #{cartId}
+            </if>
+            <if test="userId!=null and userId!='' and restaurantId!=null and restaurantId!=''">
+                and user_id = #{userId} and restaurant_id = #{restaurantId}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteCartDetails" parameterType="ProductVO">
+        DELETE FROM cart_details
+        <where>
+            <if test="id!=null and id!=''">
+                cart_id = #{id}
+            </if>
+            <if test="productId!=null and productId!='' and pocketId!=null and pocketId!=''">
+                and product_id = #{productId} and pocket_id = #{pocketId}
+            </if>
+        </where>
+    </delete>
+</mapper>

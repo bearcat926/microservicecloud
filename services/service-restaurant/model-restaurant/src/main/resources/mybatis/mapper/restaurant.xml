@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.RestaurantDao">
+
+    <select id="selectById" resultType="edu.bearcat.microservice.entities.Restaurant">
+        SELECT * FROM restaurant
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                restaurant_id = #{restaurantId}
+            </if>
+        </where>
+    </select>
+    <select id="selectRestaurantList" resultType="edu.bearcat.microservice.entities.Restaurant">
+        SELECT * FROM restaurant
+        <where>
+            <if test="userId!=null and userId!=''">
+                user_id = #{userId}
+            </if>
+            <if test="restaurantName!=null and restaurantName!=''">
+                AND restaurant_name = #{restaurantName}
+            </if>
+            <if test="restaurantProvince!=null and restaurantProvince!=''">
+                AND restaurant_province = #{restaurantProvince}
+            </if>
+            <if test="restaurantCity!=null and restaurantCity!=''">
+                AND restaurant_city = #{restaurantCity}
+            </if>
+            <if test="restaurantDistrict!=null and restaurantDistrict!=''">
+                AND restaurant_district = #{restaurantDistrict}
+            </if>
+            <if test="restaurantAddress!=null and restaurantAddress!=''">
+                AND restaurant_address LIKE '%${restaurantAddress}%'
+            </if>
+            <if test="restaurantScore!=null and restaurantScore!=''">
+                AND restaurant_score = #{restaurantScore}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertRestaurant">
+        INSERT INTO restaurant(restaurant_id,user_id,restaurant_name,restaurant_province,restaurant_city,restaurant_district,restaurant_address,restaurant_phone,restaurant_score,restaurant_description,create_time,update_time)
+        VALUES (#{restaurantId},#{userId},#{restaurantName},#{restaurantProvince},#{restaurantCity},#{restaurantDistrict},#{restaurantAddress},#{restaurantPhone},#{restaurantScore},#{restaurantDescription},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="updateRestaurant">
+        UPDATE restaurant
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userId!=null and userId!=''">
+                user_id = #{userId},
+            </if>
+            <if test="restaurantName!=null and restaurantName!=''">
+                restaurant_name = #{restaurantName},
+            </if>
+            <if test="restaurantProvince!=null and restaurantProvince!=''">
+                restaurant_province = #{restaurantProvince},
+            </if>
+            <if test="restaurantCity!=null and restaurantCity!=''">
+                restaurant_city = #{restaurantCity},
+            </if>
+            <if test="restaurantDistrict!=null and restaurantDistrict!=''">
+                restaurant_district = #{restaurantDistrict},
+            </if>
+            <if test="restaurantAddress!=null and restaurantAddress!=''">
+                restaurant_address = #{restaurantAddress},
+            </if>
+            <if test="restaurantPhone!=null and restaurantPhone!=''">
+                restaurant_phone = #{restaurantPhone},
+            </if>
+            <if test="restaurantScore!=null and restaurantScore!=''">
+                restaurant_score = #{restaurantScore},
+            </if>
+            <if test="restaurantDescription!=null and restaurantDescription!=''">
+                restaurant_description = #{restaurantDescription},
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                restaurant_id = #{restaurantId}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteRestaurant">
+        DELETE FROM restaurant
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                restaurant_id = #{restaurantId}
+            </if>
+        </where>
+    </delete>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.OrderDao">
+
+    <resultMap id="orderMap" type="edu.bearcat.microservice.entities.Order">
+        <id column="order_id" property="orderId" javaType="String"/>
+        <result column="user_id" property="userId" javaType="String"/>
+        <result column="restaurant_id" property="restaurantId" javaType="String"/>
+        <result column="order_price" property="orderPrice" javaType="Double"/>
+        <result column="pocket_num" property="pocketNum" javaType="Integer"/>
+        <result column="order_status" property="orderStatus" javaType="String"/>
+        <result column="order_score" property="orderScore" javaType="Double"/>
+        <result column="order_comment" property="orderComment" javaType="String"/>
+        <result column="create_time" property="createTime" javaType="String"/>
+        <result column="update_time" property="updateTime" javaType="String"/>
+        <collection property="products" javaType="list" ofType="edu.bearcat.microservice.entities.ProductVO">
+            <result column="id" property="id" javaType="String"/>
+            <result column="product_id" property="productId" javaType="String"/>
+            <result column="product_name" property="productName" javaType="String"/>
+            <result column="product_price" property="productPrice" javaType="Double"/>
+            <result column="product_icon" property="productIcon" javaType="String"/>
+            <result column="product_num" property="productNum" javaType="Integer"/>
+            <result column="pocket_id" property="pocketId" javaType="Integer"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByIds" parameterType="Order" resultMap="orderMap">
+        SELECT o.order_id,
+        o.user_id,
+        o.restaurant_id,
+        o.order_price,
+        o.pocket_num,
+        osc.status_name AS order_status,
+        o.order_score,
+        o.order_comment,
+        o.create_time,
+        o.update_time,
+        od.order_id AS id,
+        od.product_id,
+        od.product_name,
+        od.product_price,
+        cd.product_icon,
+        od.product_num,
+        od.pocket_id
+        FROM `order` o
+        LEFT JOIN order_details od ON o.order_id = od.order_id
+        LEFT JOIN order_status_code osc ON o.order_status = osc.order_status
+        WHERE o.user_id = #{userId} AND o.restaurant_id = #{restaurantId}
+        AND NOT EXISTS (select o.order_status from `order` o1
+					where o.order_status = o1.order_status
+					and o.order_status = 4)
+    </select>
+
+    <select id="selectByOrderId" parameterType="Order" resultMap="orderMap" >
+        SELECT o.order_id,
+        o.user_id,
+        o.restaurant_id,
+        o.order_price,
+        o.pocket_num,
+        osc.status_name AS order_status,
+        o.order_score,
+        o.order_comment,
+        o.create_time,
+        o.update_time,
+        od.order_id AS id,
+        od.product_id,
+        od.product_name,
+        od.product_price,
+        cd.product_icon,
+        od.product_num,
+        od.pocket_id
+        FROM `order` o
+        LEFT JOIN order_details od ON o.order_id = od.order_id
+        LEFT JOIN order_status_code osc ON o.order_status = osc.order_status
+        WHERE o.order_id = #{orderId}
+        AND NOT EXISTS (select o.order_status from `order` o1
+					where o.order_status = o1.order_status
+					and o.order_status = 4)
+
+    </select>
+
+    <insert id="insertOrder" parameterType="Order">
+        INSERT INTO `order`(`order_id`, `user_id`, `restaurant_id`, `order_price`, `pocket_num`, `order_status`,`order_score`,`order_comment`, `create_time`, `update_time`)
+        VALUES (#{orderId},#{userId},#{restaurantId},#{orderPrice},#{pocketNum},CONVERT(#{orderStatus},UNSIGNED),#{orderScore},#{orderComment},#{createTime},#{updateTime})
+    </insert>
+
+    <insert id="insertOrderDetails" parameterType="ProductVO">
+        INSERT INTO `order_details`(`order_id`, `product_id`, `product_name`, `product_price`,`product_icon`, `product_num`, `pocket_id`)
+        VALUES (#{id},#{productId},#{productName},#{productPrice},#{productIcon},#{productNum},#{pocketId})
+    </insert>
+
+    <update id="updateOrder" parameterType="Order">
+        UPDATE `order`
+        <trim prefix="set" suffixOverrides=",">
+            <if test="orderStatus!=null and orderStatus!=''">
+                order_status = #{orderStatus},
+            </if>
+            <if test="orderScore!=null and orderScore!=''">
+                order_score = #{orderScore},
+            </if>
+            <if test="orderComment!=null and orderComment!=''">
+                order_comment = #{orderComment},
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        <where>
+            <if test="orderId!=null and orderId!=''">
+                order_id = #{orderId}
+            </if>
+        </where>
+    </update>
+
+</mapper>

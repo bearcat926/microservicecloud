@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bearcat.microservice.dao.MenuDao">
+
+    <resultMap id="menuMap" type="edu.bearcat.microservice.entities.Menu">
+        <id column="category_id" property="categoryId" javaType="String"/>
+        <result column="restaurant_id" property="restaurantId" javaType="String"/>
+        <result column="category_index" property="categoryIndex" javaType="Integer"/>
+        <result column="category_count" property="categoryCount" javaType="Integer"/>
+        <result column="category_name" property="categoryName" javaType="String"/>
+        <result column="create_time" property="createTime" javaType="String"/>
+        <result column="update_time" property="updateTime" javaType="String"/>
+        <collection property="products" javaType="list" ofType="edu.bearcat.microservice.entities.Product">
+            <id column="product_id" property="productId" javaType="String"/>
+            <result column="product_name" property="productName" javaType="String"/>
+            <result column="product_price" property="productPrice" javaType="Double"/>
+            <result column="product_sold" property="productSold" javaType="Integer"/>
+            <result column="product_description" property="productDescription" javaType="String"/>
+            <result column="product_icon" property="productIcon" javaType="String"/>
+            <result column="product_status" property="productStatus" javaType="Integer"/>
+            <result column="own_category_id" property="categoryId" javaType="String"/>
+            <result column="createTime" property="createTime" javaType="String"/>
+            <result column="updateTime" property="updateTime" javaType="String"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectById" resultMap="menuMap">
+        SELECT m.category_id,
+        m.restaurant_id,
+        m.category_index,
+        m.category_count,
+        m.category_name,
+        m.create_time,
+        m.update_time,
+        p.product_id,
+        p.product_name,
+        p.product_price,
+        p.product_sold,
+        p.product_description,
+        p.product_icon,
+        p.product_status,
+        p.category_id AS own_category_id,
+        p.create_time AS createTime,
+        p.update_time AS updateTime
+        FROM menu m
+        LEFT JOIN product p ON m.category_id = p.category_id
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                m.restaurant_id = #{restaurantId}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND m.category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertMenu" parameterType="Menu">
+        INSERT INTO menu(category_id,restaurant_id,category_index,category_count,category_name,create_time,update_time)
+        VALUES(#{categoryId},#{restaurantId},#{categoryIndex},#{categoryCount},#{categoryName},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="updateMenu" parameterType="Menu">
+        UPDATE menu
+        <trim prefix="set" suffixOverrides=",">
+            <if test="categoryIndex!=null and categoryIndex!=''">
+                category_index = #{categoryIndex},
+            </if>
+            <if test="categoryCount!=null and categoryCount!=''">
+                category_count = #{categoryCount},
+            </if>
+            <if test="categoryName!=null and categoryName!=''">
+                category_name = #{categoryName},
+            </if>
+            <if test="updateTime!=null and updateTime!=''">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                restaurant_id= #{restaurantId}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteMenu" parameterType="Menu">
+        DELETE FROM menu
+        <where>
+            <if test="restaurantId!=null and restaurantId!=''">
+                restaurant_id= #{restaurantId}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+    </delete>
+</mapper>
